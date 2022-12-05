@@ -47,7 +47,7 @@ static SegwayData segway_data_tbl[] = {
     {Chassis_Data_Odom_Pose_xy,  sizeof(OdomPoseXy), &Odom_TimeStamp, &OdomPoseXy_update, &OdomPoseXy},
     {Chassis_Data_Odom_Euler_xy,  sizeof(OdomEulerXy), &Odom_TimeStamp, &OdomEulerXy_update, &OdomEulerXy},
     {Chassis_Data_Odom_Euler_z,  sizeof(OdomEulerZ), &Odom_TimeStamp, &OdomEulerZ_update, &OdomEulerZ},
-    {Chassis_Data_Odom_Linevel_xy,  sizeof(OdomVelLineXy), &Odom_TimeStamp, &OdomVelLineXy_update, &OdomVelLineXy}  
+    {Chassis_Data_Odom_Linevel_xy,  sizeof(OdomVelLineXy), &Odom_TimeStamp, &OdomVelLineXy_update, &OdomVelLineXy}
 };
 
 std::shared_ptr<rclcpp::Node> car_node;
@@ -141,14 +141,14 @@ Chassis::Chassis(rclcpp::Node::SharedPtr nh) : node(nh)
 
 
     iap_action_server = rclcpp_action::create_server<iapCmd>(
-        node, 
-        "iapCmd", 
+        node,
+        "iapCmd",
         std::bind(&Chassis::handle_iapCmdGoal, this, _1, _2),
         std::bind(&Chassis::handle_iapCmdCancel, this, _1),
         std::bind(&Chassis::handle_iapCmdAccepted, this, _1));
- 
+
     odom_broadcaster = std::make_shared<tf2_ros::StaticTransformBroadcaster>(node);
-    timer_1000hz = node->create_wall_timer(std::chrono::milliseconds(1), std::bind(&Chassis::timer_1000hz_callback, this)); 
+    timer_1000hz = node->create_wall_timer(std::chrono::milliseconds(1), std::bind(&Chassis::timer_1000hz_callback, this));
     timer_1hz = node->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&Chassis::timer_1hz_callback, this));
 }
 
@@ -159,7 +159,7 @@ void Chassis::ros_get_charge_mos_ctrl_status_cmd_callback(const std::shared_ptr<
     if (request->ros_get_chassis_charge_ctrl_status == true){
         ret = get_charge_mos_ctrl_status();
         response->chassis_charge_ctrl_status = ret;
-        RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "receive RosGetChargeMosCtrlStatusCmd cmd[%d], charge_ctrl_status[%d]", 
+        RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "receive RosGetChargeMosCtrlStatusCmd cmd[%d], charge_ctrl_status[%d]",
                 1, ret);
     }
     else {
@@ -187,7 +187,7 @@ void Chassis::ros_get_sw_version_cmd_callback(const std::shared_ptr<segway_msgs:
     response->central_version = get_chassis_central_version();
     response->motor_version = get_chassis_motor_version();
     RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "ros_get_sw_version_cmd true");
-    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "host_version:%d, central_version:%d, motor_version:%d", 
+    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "host_version:%d, central_version:%d, motor_version:%d",
         response->host_version, response->central_version, response->motor_version);
 }
 void Chassis::ros_get_vel_max_feedback_cmd_callback(const std::shared_ptr<segway_msgs::srv::RosGetVelMaxFeedbackCmd::Request> request,
@@ -201,7 +201,7 @@ void Chassis::ros_get_vel_max_feedback_cmd_callback(const std::shared_ptr<segway
     response->backward_max_vel_fb = get_line_backward_max_vel_fb();
     response->angular_max_vel_fb = get_angular_max_vel_fb();
     RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "ros_get_vel_max_fb_cmd true");
-    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "forward_max_vel_fb:%d, backward_max_vel_fb:%d, angular_max_vel_fb:%d", 
+    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "forward_max_vel_fb:%d, backward_max_vel_fb:%d, angular_max_vel_fb:%d",
         response->forward_max_vel_fb, response->backward_max_vel_fb, response->angular_max_vel_fb);
 }
 void Chassis::ros_set_charge_mos_ctrl_cmd_callback(const std::shared_ptr<segway_msgs::srv::RosSetChargeMosCtrlCmd::Request> request,
@@ -276,9 +276,9 @@ void Chassis::ros_set_vel_max_cmd_callback(const std::shared_ptr<segway_msgs::sr
     uint8_t ret_back = set_line_backward_max_vel(backward);
     uint8_t ret_angl = set_angular_max_vel(angular);
     response->chassis_set_max_vel_result = ret_forw | ret_back | ret_angl;
-    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "ros_set_forward_max_vel[%lf], ros_set_backward_max_vel[%lf], ros_set_angular_max_vel[%lf]", 
+    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "ros_set_forward_max_vel[%lf], ros_set_backward_max_vel[%lf], ros_set_angular_max_vel[%lf]",
         forward, backward, angular);
-    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "set_line_forward_max_vel result[%d], set_line_backward_max_vel result[%d], set_angular_max_vel result[%d]", 
+    RCLCPP_INFO(rclcpp::get_logger("SmartCar"), "set_line_forward_max_vel result[%d], set_line_backward_max_vel result[%d], set_angular_max_vel result[%d]",
         ret_forw, ret_back, ret_angl);
 }
 
@@ -290,7 +290,7 @@ void Chassis::iapCmdExecute(const std::shared_ptr<goalHandaleIapCmd> goal_handle
     auto feedback = std::make_shared<iapCmd::Feedback>();
     auto result = std::make_shared<iapCmd::Result>();
     int32_t iap_percent_fb;
-    
+
     node->get_parameter("bins_directory", bins_directory);
     node->get_parameter("chassis_version", chassis_version);
     node->get_parameter("route_version", route_version);
@@ -314,7 +314,7 @@ void Chassis::iapCmdExecute(const std::shared_ptr<goalHandaleIapCmd> goal_handle
         IapSingerBoard(bin_dir, (char*)"motor", ver);
         break;
     default:
-        RCLCPP_ERROR(rclcpp::get_logger("SmartCar"), 
+        RCLCPP_ERROR(rclcpp::get_logger("SmartCar"),
         "iap_board value error, out of [1 2]", goal->iap_board);
         result->set__iap_result(5);
         goal_handle->canceled(result);
@@ -342,7 +342,7 @@ void Chassis::iapCmdExecute(const std::shared_ptr<goalHandaleIapCmd> goal_handle
             break;
         }
     }
-    
+
     if (rclcpp::ok()) {
         if (iap_percent_fb == 100) {
             result->set__iap_result(3);
@@ -451,7 +451,7 @@ void Chassis::imu_pub_callback(void)
 }
 
 void Chassis::pub_odom_callback(void)
-{    
+{
     if ((OdomPoseXy_update & OdomEulerXy_update & OdomEulerZ_update & OdomVelLineXy_update) == 1)  {
         OdomPoseXy_update = 0, OdomEulerXy_update = 0, OdomEulerZ_update = 0, OdomVelLineXy_update = 0;
 
@@ -466,7 +466,7 @@ void Chassis::pub_odom_callback(void)
         odom_trans.transform.rotation.y = odom_quat.y();
         odom_trans.transform.rotation.z = odom_quat.z();
         odom_trans.transform.rotation.w = odom_quat.w();
-        odom_broadcaster->sendTransform(odom_trans);
+        // odom_broadcaster->sendTransform(odom_trans);
 
         odom_fb.header.stamp = node->now();
         odom_fb.header.frame_id = "odom";
