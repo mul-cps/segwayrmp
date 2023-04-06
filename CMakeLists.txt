@@ -52,7 +52,6 @@ target_link_libraries(SmartCar
 
 install(TARGETS
   SmartCar
-  drive_segway_sample
   DESTINATION
   lib/${PROJECT_NAME})
 
