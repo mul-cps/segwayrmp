@@ -50,20 +50,8 @@ target_link_libraries(SmartCar
   ${PROJECT_SOURCE_DIR}/lib/libctrl_arm64-v8a.so
 )
 
-add_executable(drive_segway_sample
-  tools/drive_segway_sample.cpp
-)
-target_include_directories(drive_segway_sample PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-ament_target_dependencies(drive_segway_sample
-  "rclcpp" "std_msgs" "nav_msgs" "sensor_msgs" "geometry_msgs" "segway_msgs" "tf2" "tf2_ros"
-) 
-
 install(TARGETS
   SmartCar
-  drive_segway_sample
   DESTINATION
   lib/${PROJECT_NAME})
 
