@@ -466,7 +466,7 @@ void Chassis::pub_odom_callback(void)
         odom_trans.transform.rotation.y = odom_quat.y();
         odom_trans.transform.rotation.z = odom_quat.z();
         odom_trans.transform.rotation.w = odom_quat.w();
-        odom_broadcaster->sendTransform(odom_trans);
+        //odom_broadcaster->sendTransform(odom_trans);
 
         odom_fb.header.stamp = node->now();
         odom_fb.header.frame_id = "odom";
