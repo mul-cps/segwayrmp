@@ -314,8 +314,8 @@ void Chassis::iapCmdExecute(const std::shared_ptr<goalHandaleIapCmd> goal_handle
         IapSingerBoard(bin_dir, (char*)"motor", ver);
         break;
     default:
-        RCLCPP_ERROR(rclcpp::get_logger("SmartCar"),
-        "iap_board value error, out of [1 2]", goal->iap_board);
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("SmartCar"),
+        "iap_board value error, out of [1 2] " << goal->iap_board);
         result->set__iap_result(5);
         goal_handle->canceled(result);
         return;
