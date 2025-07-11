@@ -115,7 +115,7 @@ char get_keyboard()
     return keyvalue;
 }
 
-void goal_response_callback(std::shared_future<goalHandleIapCmd::SharedPtr> future)
+void goal_response_callback(goalHandleIapCmd::SharedPtr future)
 {
   auto goal_handle = future.get();
   if (!goal_handle) {
