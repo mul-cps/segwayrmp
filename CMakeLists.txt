@@ -32,20 +32,20 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
 add_executable(SmartCar
-  src/SmartCar.cpp 
-  src/robot.cpp 
+  src/SmartCar.cpp
+  src/robot.cpp
 )
 target_include_directories(SmartCar PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
-target_link_directories(SmartCar PUBLIC 
+target_link_directories(SmartCar PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/lib
 )
 # message(WARNING ${PROJECT_SOURCE_DIR} + "!!" + ${CMAKE_CURRENT_SOURCE_DIR} + "!!" + ${PROJECT_NAME})
 ament_target_dependencies(SmartCar
   "rclcpp" "std_msgs" "nav_msgs" "sensor_msgs" "geometry_msgs" "segway_msgs" "tf2" "tf2_ros"
-) 
+)
 target_link_libraries(SmartCar
   ${PROJECT_SOURCE_DIR}/lib/libctrl_x86_64.so
 )
