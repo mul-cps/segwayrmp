@@ -38,7 +38,7 @@ rclcpp_action::Client<iapCmd>::SharedPtr iap_client;
 uint8_t print_error = 0;
 
 char const* print_help() {
-    char const* printHelp = 
+    char const* printHelp =
         "\t h : Displays the required keys and their meaning\n"
         "\t w : Increase forward speed by 0.1m/s\n"
         "\t s : Decrease forward speed by 0.1m/s\n"
@@ -58,7 +58,7 @@ char const* print_help() {
 void changemode(int dir)
 {
   static struct termios oldt, newt;
- 
+
   if ( dir == 1 )
   {
     tcgetattr( STDIN_FILENO, &oldt);
@@ -74,13 +74,13 @@ int kbhit (void)
 {
   struct timeval tv;
   fd_set rdfs;  //一组fd集合
- 
+
   tv.tv_sec = 0;
   tv.tv_usec = 0;   //时间为0，非阻塞
- 
+
   FD_ZERO(&rdfs);   //fd集合清空
   FD_SET (STDIN_FILENO, &rdfs); //增加新的fd
- 
+
   select(STDIN_FILENO+1, &rdfs, NULL, NULL, &tv);   //非阻塞检测fd为0的tty读取状态，rdfs特定位置1
   return FD_ISSET(STDIN_FILENO, &rdfs);     //判断指定的标准输入fd是否在rdfs集合中
 }
@@ -115,7 +115,7 @@ char get_keyboard()
     return keyvalue;
 }
 
-void goal_response_callback(std::shared_future<goalHandleIapCmd::SharedPtr> future)
+void goal_response_callback(goalHandleIapCmd::SharedPtr future)
 {
   auto goal_handle = future.get();
   if (!goal_handle) {
@@ -158,7 +158,7 @@ void drive_chassis_test()
 {
     static uint16_t set_enable_cmd = 1;
     uint8_t enable_switch = 0;
-    static double set_line_speed; 
+    static double set_line_speed;
     static double set_angular_speed;
     static double send_line_speed;
     static double send_angular_speed;
@@ -205,21 +205,21 @@ void drive_chassis_test()
         printf("current set_line_speed[%lf], set_angular_speed[%lf]\n", set_line_speed, set_angular_speed);
         break;
     case VELRESETZERO	:
-        set_line_speed = 0; 
+        set_line_speed = 0;
         set_angular_speed = 0;
         send_line_speed = 0;
         send_angular_speed = 0;
         printf("current set_line_speed[%lf], set_angular_speed[%lf]\n", set_line_speed, set_angular_speed);
         break;
-    case ENABLECMD      : 
+    case ENABLECMD      :
         enable_switch = 1;
         enable_request->ros_set_chassis_enable_cmd = set_enable_cmd;
-        ++set_enable_cmd;        
+        ++set_enable_cmd;
         set_enable_cmd %= 2;
-        RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), 
+        RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"),
                     "enable chassis switch[%d]", enable_request->ros_set_chassis_enable_cmd);
         printf("current set_line_speed[%lf], set_angular_speed[%lf]\n", set_line_speed, set_angular_speed);
-        break;  
+        break;
     case CHASSISPAUSE   :
         ++chassis_pause;
         chassis_pause %= 2;
@@ -232,7 +232,7 @@ void drive_chassis_test()
             send_angular_speed = set_angular_speed;
             printf("current set_line_speed[%lf], set_angular_speed[%lf]\n", set_line_speed, set_angular_speed);
         }
-        break;   
+        break;
     // case CLEARSCRAM :
     //     // clear_scram_flag = 1;
     //     break;
@@ -262,7 +262,7 @@ void drive_chassis_test()
     if (enable_switch){
         using enableServiceResponseFutrue = rclcpp::Client<segway_msgs::srv::RosSetChassisEnableCmd>::SharedFuture;
         auto enable_response_receive_callback = [](enableServiceResponseFutrue futrue) {
-            RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), 
+            RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"),
             "event sended successfully, result:%d", futrue.get()->chassis_set_chassis_enable_result);
         };
         auto enable_future_result = enable_client->async_send_request(enable_request, enable_response_receive_callback);
@@ -271,7 +271,7 @@ void drive_chassis_test()
     // if (clear_scram_flag) {
     //     using clearServiceResponseFuture = rclcpp::Client<segway_msgs::srv::ClearChassisScramStatusCmd>::SharedFuture;
     //     auto clear_response_receive_callback = [](clearServiceResponseFuture future) {
-    //         RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), 
+    //         RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"),
     //         "clear scram status successfully, result:%d", future.get()->clear_scram_result);
     //     };
     //     auto clear_future_result = clear_scram_client->async_send_request(clear_scram_requst, clear_response_receive_callback);
@@ -280,9 +280,9 @@ void drive_chassis_test()
     // if (get_err_flag) {
     //     using errorServiceResponseFuture = rclcpp::Client<segway_msgs::srv::GetGxErrorCmd>::SharedFuture;
     //     auto error_response_receive_callback = [](errorServiceResponseFuture future) {
-    //        RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), 
-    //             "chassis_error_code[%d], route_error_code[%d], connect_error_code[%d]", 
-    //         future.get()->chassis_error_code, 
+    //        RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"),
+    //             "chassis_error_code[%d], route_error_code[%d], connect_error_code[%d]",
+    //         future.get()->chassis_error_code,
     //         future.get()->route_error_code,
     //         future.get()->connect_error_code);
     //     };
@@ -305,7 +305,7 @@ void get_error_code_callback(const segway_msgs::msg::ErrorCodeFb::SharedPtr msg)
 {
     if (print_error != 0) {
         RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), "host_error[%#x], central_error[%#x], \
-        left_motor_error[%#x], right_motor_error[%#x], bms_err[%#x]", 
+        left_motor_error[%#x], right_motor_error[%#x], bms_err[%#x]",
         msg->host_error, msg->central_error, msg->left_motor_error, msg->right_motor_error, msg->bms_error);
     }
 }
@@ -330,10 +330,10 @@ void get_chassis_event_callback(const std::shared_ptr<segway_msgs::srv::ChassisS
         break;
     case OutLockedRotorProtectEvent:
         RCLCPP_INFO(rclcpp::get_logger("drive_segway_sample"), "CHASSIS EVENT: the chassis motor no longer locked-rotor");
-        break;    
+        break;
     default:
         break;
-    }    
+    }
 }
 
 int main(int argc, char * argv[])
@@ -352,12 +352,12 @@ int main(int argc, char * argv[])
         "event_srv", std::bind(&get_chassis_event_callback, std::placeholders::_1, std::placeholders::_2));
 
     iap_client = rclcpp_action::create_client<iapCmd>(drive_node, "iapCmd");
-    
-    rclcpp::TimerBase::SharedPtr timer_100hz = 
+
+    rclcpp::TimerBase::SharedPtr timer_100hz =
         drive_node->create_wall_timer(std::chrono::milliseconds(10), &drive_chassis_test);
 
     printf("%s\n", print_help());
-    
+
     rclcpp::spin(drive_node);
     rclcpp::shutdown();
     return 0;
