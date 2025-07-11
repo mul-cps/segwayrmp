@@ -68,6 +68,16 @@ install(TARGETS
   DESTINATION
   lib/${PROJECT_NAME})
 
+install(FILES
+        ${PROJECT_SOURCE_DIR}/lib/libctrl_x86_64.so
+        ${PROJECT_SOURCE_DIR}/lib/libctrl_arm64-v8a.so
+        DESTINATION lib)
+
+install(PROGRAMS
+        ${PROJECT_SOURCE_DIR}/lib/ctrl_x86_64
+        ${PROJECT_SOURCE_DIR}/lib/ctrl_arm64-v8a
+        DESTINATION bin)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
