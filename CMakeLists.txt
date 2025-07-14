@@ -32,6 +32,14 @@ find_package(tf2_ros REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
+if (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+  set(arch_suffix x86_64)
+elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+  set(arch_suffix arm64-v8a)
+else()
+  message(FATAL_ERROR "unsupported architecture")
+endif()
+
 add_executable(SmartCar
   src/SmartCar.cpp
   src/robot.cpp
@@ -48,7 +56,7 @@ ament_target_dependencies(SmartCar
   "rclcpp" "std_msgs" "nav_msgs" "sensor_msgs" "geometry_msgs" "segway_msgs" "tf2" "tf2_ros"
 )
 target_link_libraries(SmartCar
-  ${PROJECT_SOURCE_DIR}/lib/libctrl_x86_64.so
+  ${PROJECT_SOURCE_DIR}/lib/libctrl_${arch_suffix}.so
 )
 
 add_executable(drive_segway_sample
@@ -69,13 +77,11 @@ install(TARGETS
   lib/${PROJECT_NAME})
 
 install(FILES
-        ${PROJECT_SOURCE_DIR}/lib/libctrl_x86_64.so
-        ${PROJECT_SOURCE_DIR}/lib/libctrl_arm64-v8a.so
+        ${PROJECT_SOURCE_DIR}/lib/libctrl_${arch_suffix}.so
         DESTINATION lib)
 
 install(PROGRAMS
-        ${PROJECT_SOURCE_DIR}/lib/ctrl_x86_64
-        ${PROJECT_SOURCE_DIR}/lib/ctrl_arm64-v8a
+        ${PROJECT_SOURCE_DIR}/lib/ctrl_${arch_suffix}
         DESTINATION bin)
 
 if(BUILD_TESTING)
